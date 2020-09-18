@@ -14,15 +14,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import com.gaya_second.android_pro.Database.DBHelper;
+import com.gaya_second.android_pro.Model.Delivery;
+
 public class MainActivity extends AppCompatActivity {
     private ViewFlipper imgBanner;
     private EditText contactName,mobileNumber,phoneNumber,address,district,postalCode;
     private Button btnAdd;
-    private View view_toast;
+    private View view_toast,view_error_toast;
+    private DBHelper db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        db=new DBHelper(this);
         imgBanner=findViewById(R.id.select_product_image);
         contactName=findViewById(R.id.contact_name);
         mobileNumber=findViewById(R.id.mobile_num);
@@ -40,15 +45,47 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(checkEmpty()){
                     view_toast= LayoutInflater.from(MainActivity.this).inflate(R.layout.custom_success_toast,(LinearLayout)findViewById(R.id.custom_layout));
-                    ((TextView)view_toast.findViewById(R.id.txt_message)).setText("Data added successfully!!");
-                    ((ImageView)view_toast.findViewById(R.id.img_view)).setImageResource(R.drawable.toast_button);
-                    Toast toast=new Toast(MainActivity.this);
-                    toast.setDuration(Toast.LENGTH_LONG);
-                    toast.setView( view_toast);
-                    toast.show();
+                    view_error_toast= LayoutInflater.from(MainActivity.this).inflate(R.layout.custom_error_toast,(LinearLayout)findViewById(R.id.custom_layout));
+
+                    Delivery delivery=new Delivery();
+                    delivery.setContactName(contactName.getText().toString());
+                    delivery.setMobileNumber(Integer.parseInt(mobileNumber.getText().toString()));
+                    delivery.setPhoneNumber(Integer.parseInt(phoneNumber.getText().toString()));
+                    delivery.setAddress(address.getText().toString());
+                    delivery.setDistrict(district.getText().toString());
+                    delivery.setPostal(Integer.parseInt(postalCode.getText().toString()));
+                    boolean isAdded=db.Insert_delivery_details(delivery);
+                    if(isAdded){
+                        clearText();
+                        ((TextView)view_toast.findViewById(R.id.txt_message)).setText("Data added successfully!!");
+                        ((ImageView)view_toast.findViewById(R.id.img_view)).setImageResource(R.drawable.toast_button);
+                        Toast toast=new Toast(MainActivity.this);
+                        toast.setDuration(Toast.LENGTH_LONG);
+                        toast.setView( view_toast);
+                        toast.show();
+                    }else{
+                        clearText();
+                        ((TextView)view_error_toast.findViewById(R.id.txt_message)).setText("Error Occured");
+                        ((ImageView)view_error_toast.findViewById(R.id.img_views)).setImageResource(R.drawable.toast_error_button);
+                        Toast toast=new Toast(MainActivity.this);
+                        toast.setDuration(Toast.LENGTH_LONG);
+                        toast.setView( view_error_toast);
+                        toast.show();
+                    }
+
+
                 }
             }
         });
+    }
+    private void clearText(){
+        contactName.setText("");
+        phoneNumber.setText("");
+        mobileNumber.setText("");
+        district.setText("");
+        postalCode.setText("");
+        address.setText("");
+
     }
     private void bannerFlipper(int image){
         ImageView imgView=new ImageView(this);

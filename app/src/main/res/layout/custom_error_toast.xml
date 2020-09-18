@@ -11,7 +11,7 @@
     <ImageView
         android:padding="5dp"
         android:layout_marginStart="10dp"
-        android:id="@+id/img_view"
+        android:id="@+id/img_views"
         android:layout_width="30dp"
         android:layout_height="30dp"
         app:tint="@android:color/white" />
