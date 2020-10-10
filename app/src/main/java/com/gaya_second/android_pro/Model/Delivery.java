@@ -1,12 +1,23 @@
 package com.gaya_second.android_pro.Model;
 
- public class Delivery {
+import java.io.Serializable;
+
+public class Delivery implements Serializable {
+     private String Id;
      private String contactName;
-     private int phoneNumber;
-     private int mobileNumber;
+     private String phoneNumber;
+     private String mobileNumber;
      private String address;
      private String district;
-     private int postal;
+     private String postal;
+
+     public String getId() {
+         return Id;
+     }
+
+     public void setId(String id) {
+         Id = id;
+     }
 
      public String getContactName() {
          return contactName;
@@ -16,19 +27,19 @@ package com.gaya_second.android_pro.Model;
          this.contactName = contactName;
      }
 
-     public int getPhoneNumber() {
+     public String getPhoneNumber() {
          return phoneNumber;
      }
 
-     public void setPhoneNumber(int phoneNumber) {
+     public void setPhoneNumber(String phoneNumber) {
          this.phoneNumber = phoneNumber;
      }
 
-     public int getMobileNumber() {
+     public String getMobileNumber() {
          return mobileNumber;
      }
 
-     public void setMobileNumber(int mobileNumber) {
+     public void setMobileNumber(String mobileNumber) {
          this.mobileNumber = mobileNumber;
      }
 
@@ -48,11 +59,11 @@ package com.gaya_second.android_pro.Model;
          this.district = district;
      }
 
-     public int getPostal() {
+     public String getPostal() {
          return postal;
      }
 
-     public void setPostal(int postal) {
+     public void setPostal(String postal) {
          this.postal = postal;
      }
  }

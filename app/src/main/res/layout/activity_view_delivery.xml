@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+
+    tools:context=".ViewDelivery">
+    <RelativeLayout
+
+        android:id="@+id/relative_layout_top"
+        android:layout_width="match_parent"
+        android:background="@color/colorPrimaryDark"
+        android:layout_height="40dp">
+        <Button
+            android:id="@+id/back_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:background="@color/colorAccent"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="@string/back"
+            android:fontFamily="casual"
+            android:textColor="@android:color/white"
+            />
+
+        <TextView
+            android:id="@+id/viewName"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:layout_marginEnd="30sp"
+            android:text="delivery List"
+            android:textAllCaps="true"
+            android:textColor="@color/colorAccent"
+            android:textSize="18sp"
+            android:fontFamily="casual"
+            android:textStyle="bold"
+            />
+        <ImageView
+            android:id="@+id/addBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="30sp"
+            android:background="@drawable/add_icon"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            />
+    </RelativeLayout>
+    <com.baoyz.swipemenulistview.SwipeMenuListView
+        android:id="@+id/view_delivery_lists"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.baoyz.swipemenulistview.SwipeMenuListView>
+</LinearLayout>

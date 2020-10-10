@@ -1,7 +1,9 @@
 package com.gaya_second.android_pro;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,21 +16,30 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.gaya_second.android_pro.Database.DBHelper;
 import com.gaya_second.android_pro.Model.Delivery;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private ViewFlipper imgBanner;
     private EditText contactName,mobileNumber,phoneNumber,address,district,postalCode;
     private Button btnAdd;
+    private ImageView user_list;
     private View view_toast,view_error_toast;
-    private DBHelper db;
+    private FirebaseFirestore db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        db=new DBHelper(this);
+        db=FirebaseFirestore.getInstance();
         imgBanner=findViewById(R.id.select_product_image);
+        user_list=findViewById(R.id.user_list);
         contactName=findViewById(R.id.contact_name);
         mobileNumber=findViewById(R.id.mobile_num);
         phoneNumber=findViewById(R.id.phone_num);
@@ -36,6 +47,14 @@ public class MainActivity extends AppCompatActivity {
         district=findViewById(R.id.district);
         postalCode=findViewById(R.id.postal_code);
         btnAdd=findViewById(R.id.btn_submit);
+        user_list.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(MainActivity.this,ViewDelivery.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+            }
+        });
         int sliders[]={R.drawable.banner8,R.drawable.banner7,R.drawable.banner9,R.drawable.banner10};
         for(int slide:sliders){
             bannerFlipper(slide);
@@ -49,34 +68,65 @@ public class MainActivity extends AppCompatActivity {
 
                     Delivery delivery=new Delivery();
                     delivery.setContactName(contactName.getText().toString());
-                    delivery.setMobileNumber(Integer.parseInt(mobileNumber.getText().toString()));
-                    delivery.setPhoneNumber(Integer.parseInt(phoneNumber.getText().toString()));
+                    delivery.setMobileNumber(mobileNumber.getText().toString());
+                    delivery.setPhoneNumber(phoneNumber.getText().toString());
                     delivery.setAddress(address.getText().toString());
                     delivery.setDistrict(district.getText().toString());
-                    delivery.setPostal(Integer.parseInt(postalCode.getText().toString()));
-                    boolean isAdded=db.Insert_delivery_details(delivery);
-                    if(isAdded){
-                        clearText();
-                        ((TextView)view_toast.findViewById(R.id.txt_message)).setText("Data added successfully!!");
-                        ((ImageView)view_toast.findViewById(R.id.img_view)).setImageResource(R.drawable.toast_button);
-                        Toast toast=new Toast(MainActivity.this);
-                        toast.setDuration(Toast.LENGTH_LONG);
-                        toast.setView( view_toast);
-                        toast.show();
-                    }else{
-                        clearText();
-                        ((TextView)view_error_toast.findViewById(R.id.txt_message)).setText("Error Occured");
-                        ((ImageView)view_error_toast.findViewById(R.id.img_views)).setImageResource(R.drawable.toast_error_button);
-                        Toast toast=new Toast(MainActivity.this);
-                        toast.setDuration(Toast.LENGTH_LONG);
-                        toast.setView( view_error_toast);
-                        toast.show();
-                    }
+                    delivery.setPostal(postalCode.getText().toString());
+                    btnAdd.setEnabled(false);
+                    addData(delivery);
 
 
                 }
             }
         });
+    }
+
+    private void  addData(Delivery delivery) {
+        Map<String, Object> user = new HashMap<>();
+        user.put("contactName", delivery.getContactName());
+        user.put("phoneNumber", delivery.getPhoneNumber());
+        user.put("mobileNumber", delivery.getMobileNumber());
+        user.put("address", delivery.getAddress());
+        user.put("district", delivery.getDistrict());
+        user.put("postal", delivery.getPostal());
+
+
+        db.collection("deliveries").add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                btnAdd.setEnabled(true);
+                success();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                btnAdd.setEnabled(true);
+                failure(e.getMessage());
+            }
+        });
+
+
+    }
+
+    private void failure(String error){
+        clearText();
+        ((TextView)view_error_toast.findViewById(R.id.txt_message)).setText(error);
+        ((ImageView)view_error_toast.findViewById(R.id.img_views)).setImageResource(R.drawable.toast_error_button);
+        Toast toast=new Toast(MainActivity.this);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView( view_error_toast);
+        toast.show();
+    }
+    private void success(){
+
+        ((TextView)view_toast.findViewById(R.id.txt_message)).setText("Sucessfully Added");
+        ((ImageView)view_toast.findViewById(R.id.img_view)).setImageResource(R.drawable.toast_button);
+        Toast toast=new Toast(MainActivity.this);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView( view_toast);
+        toast.show();
+        clearText();
     }
     private void clearText(){
         contactName.setText("");
